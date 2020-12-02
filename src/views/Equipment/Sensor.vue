@@ -1,22 +1,68 @@
 <template>
   <div class="manage">
+    <el-steps >
+
+    </el-steps>
     <el-dialog
       :title="operateType === 'add' ? '新增传感器' : '更新传感器信息'"
-      :visible.sync="isShow"
+      :visible.sync="isShow" :before-close="handleclose"
     >
+
+       <el-steps :active="active" finish-status="success" align-center>
+
+        <el-step title="基本信息">
+         <!-- <sensor-form :formLable="operateForm_baseLable" :form="operateForm_base" ref="form"></sensor-form> -->
+
+        </el-step>
+        <el-step title="传感器属性">
+                <!-- <sensor-form :formLable="operateForm_propLable" :form="operateForm_prop" ref="form"></sensor-form> -->
+        </el-step>
+        <el-step title="地理信息">
+          <!-- <sensor-form :formLable="operateForm_geospatialLable" :form="operateForm_geospatial" ref="form"></sensor-form> -->
+</el-step>
+        <el-step title="绑定信息"></el-step>
+          <!-- <sensor-form :formLable="operateForm_bindLable" :form="operateForm_bind" ref="form"></sensor-form> -->
+       </el-steps>
+        <el-divider><i class="el-icon-mobile-phone"></i></el-divider>
+       
+        <!-- <sensor-form :formLable="operateForm_baseLable" :form="operateForm_base" ref="form" v-if="active==1"></sensor-form> -->
+       <!-- <sensor-form :formLable="operateForm_propLable" :form="operateForm_prop" ref="form" v-if="active==2"></sensor-form> -->
+       <!-- <sensor-form :formLable="operateForm_geospatialLable" :form="operateForm_geospatial" ref="form" v-if="active==3"></sensor-form> -->
+       <!-- <sensor-form :formLable="operateForm_bindLable" :form="operateForm_bind" ref="form" v-if="active==4"></sensor-form> -->
+        <div>
+        <sensor-form
+        :formLabel="operateForm_bindLable"
+        :form="operateForm_bind"
+        ref="form" v-if="active==4"
+      ></sensor-form>     
       <sensor-form
-        :formLabel="operateFormLabel"
-        :form="operateForm"
-        ref="form"
-      ></sensor-form>
+        :formLabel="operateForm_baseLable"
+        :form="operateForm_base"
+        ref="form" v-if="active==1"
+      ></sensor-form>   
+      <sensor-form
+        :formLabel="operateForm_propLable"
+        :form="operateForm_prop"
+        ref="form" v-if="active==2"
+      ></sensor-form>  
+      <sensor-form
+        :formLabel="operateForm_geospatialLable"
+        :form="operateForm_geospatial"
+        ref="form" v-if="active==3"
+      ></sensor-form>    
+        </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="isShow = false">取 消</el-button>
-        <el-button type="primary" @click="confirm">确 定</el-button>
+        <el-button @click="isShow = false" v-if="active==4">取 消</el-button>
+        <el-button type="primary" @click="confirm" v-if="active==4">确 定</el-button>
+        <el-button type="primary" @click="pre" v-if="active>1">上一步</el-button>
+        <el-button type="primary" @click="next" v-if="active<4">下一步</el-button>
       </div>
+
     </el-dialog>
     <div class="manage-header">
       <div>
-        <el-select v-model="value" clearable placeholder="按类别查询">
+        <span>
+        <el-select v-model="value" multiple clearable placeholder="按类别查询">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -25,7 +71,10 @@
           >
           </el-option>
         </el-select>
-        <el-select v-model="value1" clearable placeholder="按生产商查询">
+        </span>
+        <span>
+        
+                  <el-select v-model="value1" multiple clearable placeholder="按生产商查询">
           <el-option
             v-for="item in options1"
             :key="item.value"
@@ -34,7 +83,10 @@
           >
           </el-option>
         </el-select>
-        <sensor-form inline :formLabel="formLabel" :form="searchFrom">
+        </span>
+        
+
+        <!-- <sensor-form inline :formLabel="formLabel" :form="searchFrom"> -->
           <el-button type="primary" @click="getList(searchFrom.keyword)"
             >搜索</el-button
           >
@@ -46,7 +98,7 @@
         <el-button type="primary" @click="addUser">导出</el-button>
       </div>
     </div>
-    <sensor-table
+<sensor-table
       :tableData="tableData"
       :tableLabel="tableLabel"
       :config="config"
@@ -54,6 +106,7 @@
       @edit="editUser"
       @del="delUser"
     ></sensor-table>
+    
   </div>
 </template>
 
@@ -67,6 +120,129 @@ export default {
   },
   data () {
     return {
+      active: 1,
+      shownext: true,
+      showbtn: false,
+      operateForm_bind: {
+        terminal_name: '',
+        terminal_id: ''
+      },
+      operateForm_bindLable: [
+        {
+          model: 'terminal_name',
+          label: '绑定设备名称'
+        },
+        {
+          model: 'terminal_id',
+          label: '绑定设备id'
+        }
+      ],
+      operateForm_geospatial: {
+        longitude: '',
+        latitude: '',
+        geo_description: ''
+      },
+      operateForm_geospatialLable: [
+        {
+          model: 'longitude',
+          label: '经度'
+        },
+        {
+          model: 'latitude',
+          label: '纬度'
+        },
+        {
+          model: 'geo_description',
+          label: '地理描述'
+        }
+      ],
+      operateForm_prop: {
+        measure_type: '',
+        max_measure: '',
+        min_measure: ''
+      },
+      operateForm_propLable: [
+        {
+          model: 'measure_type',
+          label: '测量类型'
+        },
+        {
+          model: 'max_measure',
+          label: '测量上限'
+        },
+        {
+          model: 'min_measure',
+          label: '测量下限'
+        }
+      ],
+      operateForm_base: {
+        sensor_id: '',
+        sensor_name: '',
+        sensor_model: '',
+        manufacturer: '',
+        communication: ''
+      },
+      operateForm_baseLable: [
+        {
+          model: 'sensor_name',
+          label: '传感器名称',
+          type: 'select',
+          opts: [
+            {
+              label: '导轮测斜仪',
+              value: '导轮测斜仪'
+            },
+            {
+              label: '静力水准仪',
+              value: '静力水准仪'
+            },
+            {
+              label: '拉线位移计',
+              value: '拉线位移计'
+            },
+            {
+              label: '无线倾角仪',
+              value: '无线倾角仪'
+            },
+            {
+              label: '激光测距仪',
+              value: '激光测距仪'
+            },
+            {
+              label: '盒式测斜仪',
+              value: '盒式测斜仪'
+            },
+          ]
+        },
+        {
+          model: 'sensor_model',
+          label: '传感器型号',
+        },
+        {
+          model: 'manufacturer',
+          label: '生产厂商'
+        },
+        {
+          model: 'communication',
+          label: '通信方式',
+          type: 'select',
+          opts: [
+            {
+              label: '单工',
+              value: '单工'
+            },
+            {
+              label: '半双工',
+              value: '半双工'
+            },
+            {
+              label: '全双工',
+              value: '全双工'
+            }
+          ]
+        }
+
+      ],
       options: [{
         value: '选项1',
         label: '导轮测斜仪'
@@ -113,85 +289,45 @@ export default {
       tableData: [],
       tableLabel: [
         {
-          prop: 'type',
-          label: '审计大类类型',
+          prop: 'sensor_id',
+          label: '序号',
         },
         {
-          prop: 'project_name',
-          label: '项目名称'
+          prop: 'sensor_name',
+          label: '传感器名称'
         },
         {
-          prop: 'client',
-          label: '客户名称',
+          prop: 'sensor_model',
+          label: '传感器型号',
         },
         {
-          prop: 'reportNo',
-          label: '审计报告号'
+          prop: 'manufacturer',
+          label: '生产厂商'
         },
         {
-          prop: 'project_type',
-          label: '项目类型'
+          prop: 'terminal_name',
+          label: '所属设备名称'
         },
         {
-          prop: 'partner',
-          label: '项目合伙人'
+          prop: 'measure_type',
+          label: '测量种类'
         },
         {
-          prop: 'number',
-          label: '项目编号',
+          prop: 'sensor_state',
+          label: '采集状态',
         },
         {
-          prop: 'quality_control',
-          label: '质控负责人'
+          prop: 'max_measure',
+          label: '测量上限'
         },
         {
-          prop: 'leader',
-          label: '项目负责人',
+          prop: 'min_measure',
+          label: '测量下限',
         },
         {
-          prop: 'group_members',
-          label: '组员',
-        },
-        {
-          prop: 'accountant',
-          label: '签字注册会计师',
-        },
-        {
-          prop: 'cost_engineer',
-          label: '签字注册造价师',
-        },
-        {
-          prop: 'tax_accountant',
-          label: '签字税务师',
-        },
-        {
-          prop: 'suggestion',
-          label: '报告意见类型',
-        },
-        {
-          prop: 'start_time',
-          label: '执行起始时间',
-        },
-        {
-          prop: 'finish_time',
-          label: '执行结束时间',
-        },
-        {
-          prop: 'organization',
-          label: '施工单位',
-        },
-        {
-          prop: 'total_assets',
-          label: '资产总额',
-        },
-        {
-          prop: 'check_money',
-          label: '审核金额',
-        },
-        {
-          prop: 'reduction_money',
-          label: '审减金额',
-        },
+          prop: 'sensor_create_time',
+          label: '创建时间',
+        }
       ],
       config: {
         page: 1,
@@ -199,126 +335,178 @@ export default {
         loading: false
       },
       operateForm: {
-        type: '',
-        project_name: '',
-        client: '',
-        reportNo: '',
-        project_type: '',
-        partner: '',
-        number: '',
-        quality_control: '',
-        leader: '',
-        group_members: '',
-        accountant: '',
-        cost_engineer: '',
-        tax_accountant: '',
-        suggestion: '',
-        start_time: '',
-        finish_time: '',
-        organization: '',
-        total_assets: '',
-        total_assets: '',
-        check_money: '',
-        reduction_money: ''
+        sensor_id: '',
+        sensor_name: '',
+        sensor_model: '',
+        manufacturer: '',
+        terminal_name: '',
+        measure_type: '',
+        sensor_state: '',
+        max_measure: '',
+        min_measure: '',
+        sensor_create_time: '',
+
       },
       operateFormLabel: [
         {
-          model: 'type',
-          label: '审计大类类型',
+          model: 'sensor_id',
+          label: '传感器id'
+        },
+        {
+          model: 'measure_type',
+          label: '测量类型',
           type: 'select',
           opts: [
             {
-              label: '财务审计',
-              value: '财务审计'
+              label: '深度',
+              value: '深度'
             },
             {
-              label: '工程审计',
-              value: '工程审计'
+              label: '长度',
+              value: '长度'
             },
             {
-              label: '税务审计',
-              value: '税务审计'
+              label: '高度',
+              value: '高度'
+            },
+            {
+              label: '力大小',
+              value: '力大小'
+            },
+            {
+              label: '角度',
+              value: '角度'
             },
           ]
         },
         {
-          model: 'project_name',
-          label: '项目名称'
+          model: 'sensor_name',
+          label: '传感器名称',
+          type: 'select',
+          opts: [
+            {
+              label: '导轮测斜仪',
+              value: '导轮测斜仪'
+            },
+            {
+              label: '静力水准仪',
+              value: '静力水准仪'
+            },
+            {
+              label: '拉线位移计',
+              value: '拉线位移计'
+            },
+            {
+              label: '无线倾角仪',
+              value: '无线倾角仪'
+            },
+            {
+              label: '激光测距仪',
+              value: '激光测距仪'
+            },
+            {
+              label: '盒式测斜仪',
+              value: '盒式测斜仪'
+            },
+
+          ]
+        },
+
+
+        {
+          model: 'sensor_model',
+          label: '传感器型号',
+          type: 'select',
+          opts: [
+            {
+              label: 'Z-001',
+              value: 'Z-001'
+            },
+            {
+              label: 'Z-002',
+              value: 'Z-002'
+            },
+            {
+              label: 'Z-003',
+              value: 'Z-003'
+            },
+            {
+              label: 'Z-004',
+              value: 'Z-004'
+            },
+            {
+              label: 'Z-005',
+              value: 'Z-005'
+            },
+            {
+              label: 'Z-006',
+              value: 'Z-006'
+            },
+
+          ]
         },
         {
-          model: 'client',
-          label: '客户名称'
+          model: 'manufacturer',
+          label: '生产厂商',
+          type: 'select',
+          opts: [
+            {
+              label: '中大检测',
+              value: '中大检测'
+            },
+            {
+              label: '武汉承拓',
+              value: '武汉承拓'
+            },
+            {
+              label: '上海盛迪',
+              value: '上海盛迪'
+            },
+            {
+              label: '济南博林',
+              value: '济南博林'
+            },
+            {
+              label: '上海直川',
+              value: '上海直川'
+            }
+          ]
         },
         {
-          model: 'reportNo',
-          label: '审计报告号'
+          model: 'terminal_name',
+          label: '所属设备名称',
         },
         {
-          model: 'project_type',
-          label: '项目类型'
+          model: 'sensor_state',
+          label: '采集状态',
+          type: 'select',
+          opts: [
+            {
+              label: '在线',
+              value: '在线'
+            },
+            {
+              label: '离线',
+              value: '离线'
+            },
+            {
+              label: '测试',
+              value: '测试'
+            },
+            {
+              label: '故障',
+              value: '故障'
+            }
+          ]
         },
         {
-          model: 'partner',
-          label: '项目合伙人'
+          model: 'max_measure',
+          label: '测量上限'
         },
         {
-          model: 'number',
-          label: '项目编号'
-        },
-        {
-          model: 'quality_control',
-          label: '质控负责人'
-        },
-        {
-          model: 'leader',
-          label: '项目负责人'
-        },
-        {
-          model: 'group_members',
-          label: '组员'
-        },
-        {
-          model: 'accountant',
-          label: '签字注册会计师'
-        },
-        {
-          model: 'cost_engineer',
-          label: '签字注册造价师'
-        },
-        {
-          model: 'tax_accountant',
-          label: '签字税务师'
-        },
-        {
-          model: 'suggestion',
-          label: '报告意见类型'
-        },
-        {
-          model: 'start_time',
-          label: '执行起始时间',
-          type: 'date'
-        },
-        {
-          model: 'finish_time',
-          label: '执行结束时间',
-          type: 'date'
-        },
-        {
-          model: 'organization',
-          label: '施工单位'
-        },
-        {
-          model: 'total_assets',
-          label: '资产总额'
-        },
-        {
-          model: 'check_money',
-          label: '审计金额'
-        },
-        {
-          model: 'reduction_money',
-          label: '审减金额'
-        },
+          model: 'max_measure',
+          label: '测量下限'
+        }
       ],
       searchFrom: {
         keyword: ''
@@ -332,6 +520,26 @@ export default {
     }
   },
   methods: {
+    // handleclose:添加元素时，在对话框关闭后，点击叉叉，提示消息，然后关闭后步骤条初始化，对话框参数设置为不显示。
+    handleclose () {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          this.active = 1;
+          this.isShow = false;
+          done();
+        })
+        .catch(_ => { });
+    },
+    pre () {
+      if (this.active-- < 2) this.active = 1
+    },
+    next () {
+      if (this.active++ > 3) {
+        // this.shownext = false;
+        // this.showbtn = true;
+        this.active = 1;
+      }
+    },
     getList (name = '') {
       this.config.loading = true
       // 搜索时，页码需要设置为1，才能正确返回数据，因为数据是从第一页开始返回的
@@ -353,6 +561,7 @@ export default {
         })
     },
     addUser () {
+      this.activie = 0
       this.operateForm = {}
       this.operateType = 'add'
       this.isShow = true
@@ -375,7 +584,9 @@ export default {
           this.isShow = false
           this.getList()
         })
+        // 点击确认提交表单后情况原表单内容
       }
+      this.active = 1
     },
     delUser (row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {

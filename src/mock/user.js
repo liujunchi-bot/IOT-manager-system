@@ -22,6 +22,72 @@ const count = 200
 for (let i = 0; i < count; i++) {
   List.push(
     Mock.mock({
+      collect_frequency: Mock.Random.float(0, 5, 0, 8),
+      terminal_create_time: Mock.Random.datetime(),
+      "terminal_state|1": [
+        "开启",
+        "关闭"
+      ],
+      "terminal_type|1": [
+        "有人DTU",
+        "鲲鹏终端",
+        "中海达终端",
+        "中大终端"
+      ],
+      "terminal_produce|1": [
+        "中大检测",
+        "武汉承拓",
+        "上海盛迪",
+        "济南博林",
+        "上海直川"
+      ],
+      terminal_id: Mock.Random.guid(),
+      sensor_id: i + 1,
+      "sensor_name|1": [
+        "导轮测斜仪",
+        "静力水准仪",
+        "拉线位移计",
+        "无线倾角仪",
+        "激光测距仪",
+        "盒式测斜仪"
+      ],
+      "sensor_model|1": [
+        "Z-001",
+        "Z-002",
+        "Z-003",
+        "Z-004",
+        "Z-005",
+        "Z-006"
+      ],
+      "manufacturer|1": [
+        "中大检测",
+        "武汉承拓",
+        "上海盛迪",
+        "济南博林",
+        "上海直川"
+      ],
+      "terminal_name|1": [
+        "有人DTU",
+        "鲲鹏终端",
+        "中海达终端",
+        "中大终端"
+      ],
+      "measure_type|1": [
+        "深度",
+        "长度",
+        "高度",
+        "力大小",
+        "角度"
+      ],
+      "sensor_state|1": [
+        "在线",
+        "离线",
+        "测试",
+        "故障"
+      ],
+      "max_measure|100-200.2": 0,
+      "min_measure|0-100.2": 0,
+      sensor_create_time: Mock.Random.datetime(),
       // id: Mock.Random.guid(),
       // number: Mock.Random.natural(1,100000),
       // name: Mock.Random.cname(),

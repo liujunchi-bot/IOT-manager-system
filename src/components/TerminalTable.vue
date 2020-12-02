@@ -1,16 +1,18 @@
 <template>
-  <div class="common-table">
+  <div class="contract-table">
     <el-table :data="tableData" height="90%" stripe v-loading="config.loading">
       <el-table-column
         type="selection"
         width="55"
         align="center"
       ></el-table-column>
-      <!-- <el-table-column label="序号" width="85">
+      <el-table-column label="序号" width="85">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ (config.page - 1) * 20 + scope.$index + 1 }}</span>
+          <span style="margin-left: 10px">{{
+            (config.page - 1) * 20 + scope.$index + 1
+          }}</span>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column
         show-overflow-tooltip
         v-for="item in tableLabel"
@@ -22,8 +24,9 @@
           <span style="margin-left: 10px">{{ scope.row[item.prop] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" min-width="180">
+      <el-table-column label="操作" min-width="250">
         <template slot-scope="scope">
+          <el-button size="mini" @click="handleEdit(scope.row)">查看</el-button>
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)"
             >删除</el-button
@@ -65,7 +68,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.common-table {
+.contract-table {
   height: calc(100% - 10px);
   background-color: #fff;
   position: relative;
