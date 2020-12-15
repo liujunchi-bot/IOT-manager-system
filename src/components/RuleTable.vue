@@ -18,10 +18,17 @@
         v-for="item in tableLabel"
         :key="item.prop"
         :label="item.label"
-        :width="item.width ? item.width : 100"
+        :width="item.width ? item.width : 150"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px"> {{ scope.row[item.prop] }}</span>
+          <span style="margin-left: 10px" v-if="item.prop == 'warn_rank'">
+            <el-tag effect="dark" :type="warn_index[scope.$index % 3]">{{
+              warn_list[scope.$index % 3]
+            }}</el-tag>
+          </span>
+          <span style="margin-left: 10px" v-else>{{
+            scope.row[item.prop]
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" min-width="250">
@@ -48,6 +55,20 @@
 
 <script>
 export default {
+  data () {
+    return {
+      warn_index: [
+        "danger",
+        "warn",
+        "info"
+      ],
+      warn_list: [
+        "高风险",
+        "中风险",
+        "低风险"
+      ]
+    }
+  },
   props: {
     tableData: Array,
     tableLabel: Array,

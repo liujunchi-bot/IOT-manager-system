@@ -42,9 +42,9 @@
         </el-select>
         </span>
         
-
+       <span><el-input type="text" v-model="search_id" placeholder="请输入设备id" size="small" style="width:150px"></el-input></span>
         <!-- <sensor-form inline :formLabel="formLabel" :form="searchFrom"> -->
-          <el-button type="primary" @click="getList(searchFrom.keyword)"
+          <el-button type="primary" @click="search_form_id(search_id)"
             >搜索</el-button
           >
         </sensor-form>
@@ -69,6 +69,8 @@
 <script>
 import TerminalForm from '../../components/TerminalForm'
 import TerminalTable from '../../components/TerminalTable'
+import axios from '../../axios/ajax'
+import qs from 'qs'
 export default {
   components: {
     TerminalForm,
@@ -76,6 +78,7 @@ export default {
   },
   data () {
     return {
+      search_id: '',
       options: [{
         value: '选项1',
         label: '有人DTU'
@@ -115,28 +118,48 @@ export default {
       tableData: [],
       tableLabel: [
         {
-          prop: 'terminal_type',
-          label: '设备名称',
-        },
-        {
-          prop: 'terminal_produce',
-          label: '生产厂商'
-        },
-        {
           prop: 'terminal_id',
           label: '设备id',
         },
         {
-          prop: 'sensor_id',
-          label: '绑定的传感器id'
+          prop: 'terminal_class_id',
+          label: '设备类id'
+        },
+        {
+          prop: 'terminal_type',
+          label: '设备名称',
+        },
+        {
+          prop: 'terminal_model',
+          label: '设备型号'
+        },
+        {
+          prop: 'terminal_company',
+          label: '生产厂商'
+        },
+        {
+          prop: 'terminal_long',
+          label: '经度'
+        },
+        {
+          prop: 'terminal_lot',
+          label: '纬度'
+        },
+        {
+          prop: 'terminal_communication',
+          label: '通信方式'
+        },
+        {
+          prop: 'terminal_ip',
+          label: 'IP地址'
         },
         {
           prop: 'terminal_state',
           label: '监控状态'
         },
         {
-          prop: 'collect_frequency',
-          label: '采集频率'
+          prop: 'terminal_location_describe',
+          label: '地理位置描述'
         },
         {
           prop: 'terminal_create_time',
@@ -149,18 +172,52 @@ export default {
         loading: false
       },
       operateForm: {
-        terminal_type: '',
-        terminal_produce: '',
         terminal_id: '',
-        sensor_id: '',
-        terminal_state: '',
-        collect_frequency: '',
+        terminal_class_id: '',
+        // terminal_type: '',
+        terminal_model: '',
+        terminal_company: '',
         terminal_create_time: '',
+        terminal_long: '',
+        terminal_lot: '',
+        terminal_communication: '',
+        terminal_ip: '',
+        terminal_state: '',
+        terminal_location_describe: '',
+
+
       },
       operateFormLabel: [
         {
+          model: 'terminal_id',
+          label: '设备id'
+        },
+        {
+          model: 'terminal_class_id',
+          label: '设备类id',
+          type: 'select',
+          opts: [
+            {
+              label: '1',
+              value: '1'
+            },
+            {
+              label: '2',
+              value: '2'
+            },
+            {
+              label: '3',
+              value: '3'
+            },
+            {
+              label: '4',
+              value: '4'
+            },
+          ]
+        },
+        {
           model: 'terminal_type',
-          label: '设备名称',
+          label: '设备类名称',
           type: 'select',
           opts: [
             {
@@ -182,16 +239,51 @@ export default {
           ]
         },
         {
-          model: 'terminal_produce',
+          model: 'terminal_model',
+          label: '设备型号'
+        },
+        {
+          model: 'terminal_company',
           label: '生产厂商'
         },
         {
-          model: 'terminal_id',
-          label: '设备id'
+          model: 'terminal_long',
+          label: '经度'
         },
         {
-          model: 'sensor_id',
-          label: '绑定传感器id'
+          model: 'terminal_lot',
+          label: '纬度'
+        },
+        {
+          model: 'terminal_communication',
+          label: '通信方式',
+          type: 'select',
+          opts: [
+            {
+              label: '3G',
+              value: '3G'
+            },
+            {
+              label: '4G',
+              value: '4G'
+            },
+            {
+              label: '5G',
+              value: '5G'
+            },
+            {
+              label: '有线',
+              value: '有线'
+            },
+            {
+              label: 'WIFI',
+              value: 'WIFI'
+            },
+            {
+              label: '红外',
+              value: '红外'
+            },
+          ]
         },
         {
           model: 'terminal_state',
@@ -199,22 +291,32 @@ export default {
           type: 'select',
           opts: [
             {
-              label: '设备运行',
-              value: '1'
+              label: '警报',
+              value: '警报'
             },
             {
-              label: '设备关闭',
-              value: '2'
+              label: '测试',
+              value: '测试'
+            },
+            {
+              label: '停运',
+              value: '停运'
+            },
+            {
+              label: '运行',
+              value: '运行'
             }
+
           ]
         },
         {
-          model: 'collect_frequency',
-          label: '采集频率'
+          model: 'terminal_location_describe',
+          label: '地理位置描述'
         },
         {
           model: 'terminal_create_time',
-          label: '创建时间'
+          label: '创建时间',
+          type: 'date'
         }
       ],
       searchFrom: {
@@ -229,25 +331,57 @@ export default {
     }
   },
   methods: {
+    // getList (name = '') {
+    //   this.config.loading = true
+    //   // 搜索时，页码需要设置为1，才能正确返回数据，因为数据是从第一页开始返回的
+    //   name ? (this.config.page = 1) : ''
+    //   this.$http
+    //     .get('/api/user/getUser', {
+    //       params: {
+    //         page: this.config.page,
+    //         name,
+    //       }
+    //     })
+    //     .then(res => {
+    //       this.tableData = res.data.list.map(item => {
+    //         item.categoryLabel = item.category === 0 ? '税审' : '年审'
+    //         return item
+    //       })
+    //       this.config.total = res.data.count
+    //       this.config.loading = false
+    //     })
+    // },
+    search_form_id (id = '') {
+      this.config.loading = true
+      this.config.page = 1
+      alert("id:  " + id)
+      let common_table = []
+      if (id == '') this.getList();
+      else {
+
+        axios._get("http://localhost:8181/terminal_info/findById/" + id).then(res => {
+          this.$message.success("获取设备列表成功！")
+          common_table.push(res)
+          this.tableData = common_table;
+          console.log("res       " + JSON.stringify(res))
+          console.log("tabledata    " + JSON.stringify(this.tableData))
+          this.config.loading = false;
+        }, err => {
+          alert("error!!!");
+        })
+      }
+    },
     getList (name = '') {
       this.config.loading = true
-      // 搜索时，页码需要设置为1，才能正确返回数据，因为数据是从第一页开始返回的
       name ? (this.config.page = 1) : ''
-      this.$http
-        .get('/api/user/getUser', {
-          params: {
-            page: this.config.page,
-            name,
-          }
-        })
-        .then(res => {
-          this.tableData = res.data.list.map(item => {
-            item.categoryLabel = item.category === 0 ? '税审' : '年审'
-            return item
-          })
-          this.config.total = res.data.count
-          this.config.loading = false
-        })
+      axios._get("http://localhost:8181/terminal_info/findAll/").then(res => {
+        this.$message.success("获取设备列表成功！")
+        this.tableData = res;
+        this.config.loading = false;
+        console.log("getlist:   " + JSON.stringify(this.tableData))
+      }, err => {
+        alert("error!!!");
+      })
     },
     addUser () {
       this.operateForm = {}
@@ -261,19 +395,57 @@ export default {
     },
     confirm () {
       if (this.operateType === 'edit') {
-        this.$http.post('/api/user/edit', this.operateForm).then(res => {
-          console.log(res.data)
+        alert("正在编辑！")
+        console.log("put:    " + JSON.stringify(this.operateForm))
+        axios._put('http://localhost:8181/terminal_info/update', JSON.stringify(this.operateForm)).then(res => {
+          console.log(res)
           this.isShow = false
           this.getList()
         })
       } else {
-        this.$http.post('/api/user/add', this.operateForm).then(res => {
-          console.log(res.data)
+        // alert("添加成功！")
+        console.log("tabel:   " + this.operateForm);
+        console.log("111111" + JSON.stringify(this.operateForm));
+        axios._post('http://localhost:8181/terminal_info/add/', JSON.stringify(this.operateForm)).then(res => {
+
+          this.$message.success("创建设备成功！");
           this.isShow = false
           this.getList()
+        }, err => {
+          alert("error!!!")
         })
       }
     },
+    // delUser (row) {
+    //   this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   })
+    //     .then(() => {
+    //       let id = row.id
+    //       this.$http
+    //         .get('/api/user/del', {
+    //           params: {
+    //             id
+    //           }
+    //         })
+    //         .then(res => {
+    //           console.log(res.data)
+    //           this.$message({
+    //             type: 'success',
+    //             message: '删除成功!'
+    //           })
+    //           this.getList()
+    //         })
+    //     })
+    //     .catch(() => {
+    //       this.$message({
+    //         type: 'info',
+    //         message: '已取消删除'
+    //       })
+    //     })
+    // }
     delUser (row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -281,15 +453,14 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          let id = row.id
-          this.$http
-            .get('/api/user/del', {
-              params: {
-                id
-              }
-            })
+          // let project_id=row.project_id;
+          //console.log("id+  "+id);
+          axios
+            ._remove('http://localhost:8181/terminal_info/deleteById', row.terminal_id)
+
             .then(res => {
-              console.log(res.data)
+              console.log("row:    " + row.terminal_id)
+              console.log(qs.stringify(row))
               this.$message({
                 type: 'success',
                 message: '删除成功!'

@@ -24,7 +24,7 @@ export default {
                   },
                   {
                     path: "/sensor",
-                    name: "传感器管理",
+                    name: "sensor",
                     label: '传感器管理',
                     icon: 'setting',
                     url: 'Equipment/Sensor'
@@ -41,57 +41,70 @@ export default {
 
               ,
               {
-                path: '/',
-                name: 'home',
-                label: '项目统计',
+                label: '规则管理',
                 icon: 's-home',
-                url: 'Home/Home'
+                children: [
+                  {
+                    path: "/",
+                    name: "智能报警模型",
+                    label: '智能报警模型',
+                    icon: 'setting',
+                    url: 'Rulemanage/Rulemanage'
+                  },
+                ]
               },
               {
-                path: '/video',
-                name: 'video',
-                label: '合同管理',
+                label: '报警管理',
                 icon: 'video-play',
-                url: 'VideoManage/VideoManage'
+                children: [
+                  {
+                    path: "/warn_msg",
+                    name: "报警通知",
+                    label: '报警通知',
+                    icon: 'setting',
+                    url: 'Warnmanage/Warnmsg'
+                  },
+                  {
+                    path: "/warn_map",
+                    name: "报警地图",
+                    label: '报警地图',
+                    icon: 'setting',
+                    url: 'Warnmanage/Warnmap'
+                  },
+                  {
+                    path: "/warn_log",
+                    name: "报警日志",
+                    label: '报警日志',
+                    icon: 'setting',
+                    url: 'Warnmanage/Warnlog'
+                  },
+                ]
+
               },
               {
-                path: '/user',
-                name: 'user',
-                label: '项目列表',
-                icon: 'user',
-                url: 'UserManage/UserManage'
-              },
-              {
-                label: '文档管理',
+                label: 'API管理',
                 icon: 'location',
                 children: [
                   {
-                    path: "/design",
-                    name: "设计文档",
-                    label: '设计文档',
+                    path: "/apisetting",
+                    name: "API配置",
+                    label: 'API配置',
                     icon: 'setting',
-                    url: 'Other/PageOne'
+                    url: 'APImanage/APIsetting'
                   },
                   {
-                    path: "/audit",
-                    name: "审计文档",
-                    label: '审计文档',
+                    path: "/apimaintain",
+                    name: "API维护",
+                    label: 'API维护',
                     icon: 'setting',
-                    url: 'Other/PageTwo'
+                    url: 'APImanage/APImaintain'
                   },
                   {
-                    path: "/xz",
-                    name: "行政文档",
-                    label: '行政文档',
+                    path: "/apipermission",
+                    name: "权限管理",
+                    label: '权限管理',
                     icon: 'setting',
-                    url: 'Other/PageThree'
-                  },
-                  {
-                    path: "/dangan",
-                    name: "档案文档",
-                    label: '档案文档',
-                    icon: 'setting',
-                    url: 'Other/PageFour'
+                    url: 'APImanage/APIpermission'
                   }
                 ]
               }

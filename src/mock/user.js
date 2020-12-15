@@ -16,12 +16,62 @@ function param2Obj (url) {
   )
 }
 
+let warn_sensor = ["导轮测斜仪",
+  "静力水准仪",
+  "拉线位移计",
+  "无线倾角仪",
+  "激光测距仪",
+  "盒式测斜仪"]
 let List = []
 const count = 200
 
 for (let i = 0; i < count; i++) {
   List.push(
     Mock.mock({
+
+      warn_id: i,
+      warn_geo: Mock.Random.city(true),
+
+      "warn_way|1": [
+        "短信",
+        "邮箱",
+      ],
+      warn_connect: Mock.Random.cname(),
+      warn_do_time: Mock.Random.datetime(),
+
+      warn_time: Mock.Random.datetime(),
+      "warn_name|1": [
+        "水压过高",
+        "承重压力过高",
+        "桥梁韧性过低",
+        "土质拉力过大"
+      ],
+      warn_rule: Mock.Random.csentence(9),
+      "warn_sensor1|1": [
+        "导轮测斜仪",
+        "静力水准仪",
+        "拉线位移计",
+        "无线倾角仪",
+        "激光测距仪",
+        "盒式测斜仪"
+      ],
+      warn_max1: Mock.Random.integer(10, 20),
+      warn_min1: Mock.Random.integer(0, 5),
+      normal_value: "[" + Mock.Random.integer(0, 5) + "," + Mock.Random.integer(10, 20) + "]",
+      warn_value: Mock.Random.integer(21, 30),
+      "warn_sensor2|1": [
+        "导轮测斜仪",
+        "静力水准仪",
+        "拉线位移计",
+        "无线倾角仪",
+        "激光测距仪",
+        "盒式测斜仪"
+      ],
+      warn_max2: Mock.Random.integer(10, 20),
+      warn_min2: Mock.Random.integer(0, 5),
+      warn_class1: warn_sensor[Mock.Random.integer(0, 5)] + "/" + "[" + Mock.Random.integer(0, 5) + "," + Mock.Random.integer(10, 20) + "]",
+      warn_class2: warn_sensor[Mock.Random.integer(0, 5)] + "/" + "[" + Mock.Random.integer(0, 5) + "," + Mock.Random.integer(10, 20) + "]",
+      warn_add_time: Mock.Random.datetime(),
       collect_frequency: Mock.Random.float(0, 5, 0, 8),
       terminal_create_time: Mock.Random.datetime(),
       "terminal_state|1": [

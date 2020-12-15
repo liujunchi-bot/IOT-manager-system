@@ -13,6 +13,11 @@ import './mock'
 
 // 第三方包
 import ElementUI from 'element-ui'
+import echarts from 'echarts'
+import '../node_modules/echarts/map/js/province/beijing.js'  // 引入北京地图数据
+
+Vue.prototype.echarts = echarts
+
 
 Vue.use(ElementUI)
 Vue.prototype.$http = http
@@ -20,8 +25,8 @@ Vue.prototype.$http = http
 Vue.config.productionTip = false
 
 axios.defaults.withCredentials = true
-axios.defaults.baseURL = "http://localhost:8080"
-Vue.prototype.$http = axios
+// axios.defaults.baseURL = "http://localhost:8080"
+Vue.prototype.$axios = axios
 Vue.use(axios)
 Vue.use(VueParticles)
 

@@ -1,96 +1,108 @@
 <template>
   <div class="manage">
-    <el-steps >
-
-    </el-steps>
+    <el-steps> </el-steps>
     <el-dialog
       :title="operateType === 'add' ? '新增传感器' : '更新传感器信息'"
-      :visible.sync="isShow" :before-close="handleclose"
+      :visible.sync="isShow"
+      :before-close="handleclose"
     >
-
-       <el-steps :active="active" finish-status="success" align-center>
-
+      <el-steps :active="active" finish-status="success" align-center>
         <el-step title="基本信息">
-         <!-- <sensor-form :formLable="operateForm_baseLable" :form="operateForm_base" ref="form"></sensor-form> -->
-
+          <!-- <sensor-form :formLable="operateForm_baseLable" :form="operateForm_base" ref="form"></sensor-form> -->
         </el-step>
         <el-step title="传感器属性">
-                <!-- <sensor-form :formLable="operateForm_propLable" :form="operateForm_prop" ref="form"></sensor-form> -->
+          <!-- <sensor-form :formLable="operateForm_propLable" :form="operateForm_prop" ref="form"></sensor-form> -->
         </el-step>
         <el-step title="地理信息">
           <!-- <sensor-form :formLable="operateForm_geospatialLable" :form="operateForm_geospatial" ref="form"></sensor-form> -->
-</el-step>
+        </el-step>
         <el-step title="绑定信息"></el-step>
-          <!-- <sensor-form :formLable="operateForm_bindLable" :form="operateForm_bind" ref="form"></sensor-form> -->
-       </el-steps>
-        <el-divider><i class="el-icon-mobile-phone"></i></el-divider>
-       
-        <!-- <sensor-form :formLable="operateForm_baseLable" :form="operateForm_base" ref="form" v-if="active==1"></sensor-form> -->
-       <!-- <sensor-form :formLable="operateForm_propLable" :form="operateForm_prop" ref="form" v-if="active==2"></sensor-form> -->
-       <!-- <sensor-form :formLable="operateForm_geospatialLable" :form="operateForm_geospatial" ref="form" v-if="active==3"></sensor-form> -->
-       <!-- <sensor-form :formLable="operateForm_bindLable" :form="operateForm_bind" ref="form" v-if="active==4"></sensor-form> -->
-        <div>
-        <sensor-form
-        :formLabel="operateForm_bindLable"
-        :form="operateForm_bind"
-        ref="form" v-if="active==4"
-      ></sensor-form>     
-      <sensor-form
-        :formLabel="operateForm_baseLable"
-        :form="operateForm_base"
-        ref="form" v-if="active==1"
-      ></sensor-form>   
-      <sensor-form
-        :formLabel="operateForm_propLable"
-        :form="operateForm_prop"
-        ref="form" v-if="active==2"
-      ></sensor-form>  
-      <sensor-form
-        :formLabel="operateForm_geospatialLable"
-        :form="operateForm_geospatial"
-        ref="form" v-if="active==3"
-      ></sensor-form>    
-        </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="isShow = false" v-if="active==4">取 消</el-button>
-        <el-button type="primary" @click="confirm" v-if="active==4">确 定</el-button>
-        <el-button type="primary" @click="pre" v-if="active>1">上一步</el-button>
-        <el-button type="primary" @click="next" v-if="active<4">下一步</el-button>
-      </div>
+        <!-- <sensor-form :formLable="operateForm_bindLable" :form="operateForm_bind" ref="form"></sensor-form> -->
+      </el-steps>
+      <el-divider><i class="el-icon-mobile-phone"></i></el-divider>
 
+      <!-- <sensor-form :formLable="operateForm_baseLable" :form="operateForm_base" ref="form" v-if="active==1"></sensor-form> -->
+      <!-- <sensor-form :formLable="operateForm_propLable" :form="operateForm_prop" ref="form" v-if="active==2"></sensor-form> -->
+      <!-- <sensor-form :formLable="operateForm_geospatialLable" :form="operateForm_geospatial" ref="form" v-if="active==3"></sensor-form> -->
+      <!-- <sensor-form :formLable="operateForm_bindLable" :form="operateForm_bind" ref="form" v-if="active==4"></sensor-form> -->
+      <div>
+        <sensor-form
+          :formLabel="operateForm_bindLable"
+          :form="operateForm_bind"
+          ref="form"
+          v-if="active == 4"
+        ></sensor-form>
+        <sensor-form
+          :formLabel="operateForm_baseLable"
+          :form="operateForm_base"
+          ref="form"
+          v-if="active == 1"
+        ></sensor-form>
+        <sensor-form
+          :formLabel="operateForm_propLable"
+          :form="operateForm_prop"
+          ref="form"
+          v-if="active == 2"
+        ></sensor-form>
+        <sensor-form
+          :formLabel="operateForm_geospatialLable"
+          :form="operateForm_geospatial"
+          ref="form"
+          v-if="active == 3"
+        ></sensor-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isShow = false" v-if="active == 4">取 消</el-button>
+        <el-button type="primary" @click="confirm" v-if="active == 4"
+          >确 定</el-button
+        >
+        <el-button type="primary" @click="pre" v-if="active > 1"
+          >上一步</el-button
+        >
+        <el-button type="primary" @click="next" v-if="active < 4"
+          >下一步</el-button
+        >
+      </div>
     </el-dialog>
     <div class="manage-header">
       <div>
         <span>
-        <el-select v-model="value" multiple clearable placeholder="按类别查询">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+          <el-select
+            v-model="value"
+            multiple
+            clearable
+            placeholder="按类别查询"
           >
-          </el-option>
-        </el-select>
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
         </span>
         <span>
-        
-                  <el-select v-model="value1" multiple clearable placeholder="按生产商查询">
-          <el-option
-            v-for="item in options1"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+          <el-select
+            v-model="value1"
+            multiple
+            clearable
+            placeholder="按生产商查询"
           >
-          </el-option>
-        </el-select>
+            <el-option
+              v-for="item in options1"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
         </span>
-        
 
         <!-- <sensor-form inline :formLabel="formLabel" :form="searchFrom"> -->
-          <el-button type="primary" @click="getList(searchFrom.keyword)"
-            >搜索</el-button
-          >
-        </sensor-form>
+        <el-button type="primary" @click="getList(searchFrom.keyword)"
+          >搜索</el-button
+        >
       </div>
       <div>
         <el-button type="primary" @click="addUser">添加</el-button>
@@ -98,7 +110,7 @@
         <el-button type="primary" @click="addUser">导出</el-button>
       </div>
     </div>
-<sensor-table
+    <sensor-table
       :tableData="tableData"
       :tableLabel="tableLabel"
       :config="config"
@@ -106,13 +118,13 @@
       @edit="editUser"
       @del="delUser"
     ></sensor-table>
-    
   </div>
 </template>
 
 <script>
 import SensorForm from '../../components/SensorForm'
 import SensorTable from '../../components/SensorTable'
+// import Mock from 'mockjs'
 export default {
   components: {
     SensorForm,
@@ -180,6 +192,7 @@ export default {
         sensor_name: '',
         sensor_model: '',
         manufacturer: '',
+        sensor_state: '',
         communication: ''
       },
       operateForm_baseLable: [
@@ -238,6 +251,25 @@ export default {
             {
               label: '全双工',
               value: '全双工'
+            }
+          ]
+        },
+        {
+          model: 'sensor_state',
+          label: '采集状态',
+          type: 'select',
+          opts: [
+            {
+              label: '在线',
+              value: '在线'
+            },
+            {
+              label: '测试',
+              value: '测试'
+            },
+            {
+              label: '离线',
+              value: '离线'
             }
           ]
         }
@@ -325,6 +357,10 @@ export default {
           label: '测量下限',
         },
         {
+          prop: 'communication',
+          label: '通信方式'
+        },
+        {
           prop: 'sensor_create_time',
           label: '创建时间',
         }
@@ -339,6 +375,7 @@ export default {
         sensor_name: '',
         sensor_model: '',
         manufacturer: '',
+        communication: '',
         terminal_name: '',
         measure_type: '',
         sensor_state: '',
@@ -579,6 +616,7 @@ export default {
           this.getList()
         })
       } else {
+
         this.$http.post('/api/user/add', this.operateForm).then(res => {
           console.log(res.data)
           this.isShow = false
